@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../challengealgorithm/challengealgorithm.iml" filepath="$PROJECT_DIR$/../challengealgorithm/challengealgorithm.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sqstudyproject.iml" filepath="$PROJECT_DIR$/sqstudyproject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sqstudyprojectroot.iml" filepath="$PROJECT_DIR$/sqstudyprojectroot.iml" />
       <module fileurl="file://$PROJECT_DIR$/../studytestdrivendevelopment/studytestdrivendevelopment.iml" filepath="$PROJECT_DIR$/../studytestdrivendevelopment/studytestdrivendevelopment.iml" />
     </modules>
   </component>

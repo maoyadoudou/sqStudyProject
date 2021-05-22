@@ -12,7 +12,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="challengealgorithm" target="8" />
-      <module name="sqstudyproject" target="8" />
+      <module name="sqstudyprojectroot" target="8" />
       <module name="studytestdrivendevelopment" target="8" />
     </bytecodeTargetLevel>
   </component>
