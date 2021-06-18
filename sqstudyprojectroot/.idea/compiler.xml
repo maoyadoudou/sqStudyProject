@@ -7,12 +7,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="challengealgorithm" />
+        <module name="sqstudytdd" />
         <module name="studytestdrivendevelopment" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="challengealgorithm" target="8" />
       <module name="sqstudyprojectroot" target="8" />
+      <module name="sqstudytdd" target="8" />
       <module name="studytestdrivendevelopment" target="8" />
     </bytecodeTargetLevel>
   </component>

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../challengealgorithm/challengealgorithm.iml" filepath="$PROJECT_DIR$/../challengealgorithm/challengealgorithm.iml" />
       <module fileurl="file://$PROJECT_DIR$/sqstudyprojectroot.iml" filepath="$PROJECT_DIR$/sqstudyprojectroot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../sqstudytdd/sqstudytdd.iml" filepath="$PROJECT_DIR$/../sqstudytdd/sqstudytdd.iml" />
       <module fileurl="file://$PROJECT_DIR$/../studytestdrivendevelopment/studytestdrivendevelopment.iml" filepath="$PROJECT_DIR$/../studytestdrivendevelopment/studytestdrivendevelopment.iml" />
     </modules>
   </component>
