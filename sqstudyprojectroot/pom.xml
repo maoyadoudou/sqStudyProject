@@ -9,7 +9,6 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>../studytestdrivendevelopment</module>
         <module>../challengealgorithm</module>
         <module>../sqstudytdd</module>
     </modules>
