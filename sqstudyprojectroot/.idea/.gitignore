@@ -10,6 +10,9 @@
 ##############################
 ## Author: Dedunu Dhananjaya
 ## Original Version Citation: https://gist.github.com/dedunumax/54e82214715e35439227
+## Update:
+## This project provide a good setting:
+## https://github.com/github/gitignore
 ##############################
 
 ##############################
@@ -21,6 +24,11 @@
 *.war
 *.ear
 *.nar
+*.log
+*.ctxt
+*.zip
+*.tar.gz
+*.rar
 hs_err_pid*
 
 ##############################
