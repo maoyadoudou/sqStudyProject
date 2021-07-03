@@ -12,6 +12,7 @@ public class MainWindow extends JFrame {
     public static final String JOIN_BUTTON_NAME = "join button";
     public static final String NEW_ITEM_STOP_PRICE_NAME = "stop price";
     public static final String STATUS_LOST = "Lost";
+    public static final String STATUS_WON = "Won";
     public static final String STATUS_JOINING = "Joining";
     public static final String STATUS_BIDDING = "Bidding";
     public static final String SNIPER_STATUS_NAME = "sniper status";
