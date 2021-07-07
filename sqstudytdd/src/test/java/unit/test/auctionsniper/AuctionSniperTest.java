@@ -1,11 +1,7 @@
 package unit.test.auctionsniper;
 
-import auctionsniper.Auction;
+import auctionsniper.*;
 import auctionsniper.AuctionEventListener.PriceSource;
-import auctionsniper.AuctionSniper;
-import auctionsniper.SniperListener;
-import auctionsniper.SniperSnapshot;
-import auctionsniper.SniperState;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
@@ -26,7 +22,7 @@ public class AuctionSniperTest {
     private final SniperListener sniperListener =
             context.mock(SniperListener.class);
     private final Auction auction = context.mock(Auction.class);
-    private final AuctionSniper sniper = new AuctionSniper(ITEM_ID, auction);
+    private final AuctionSniper sniper = new AuctionSniper(new UserRequestListener.Item(ITEM_ID, Integer.MAX_VALUE), auction);
     private final States sniperState = context.states("sniper");
 
     @Test

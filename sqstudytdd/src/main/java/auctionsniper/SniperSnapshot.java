@@ -37,6 +37,10 @@ public class SniperSnapshot {
         return itemId.equals(sniperSnapshot.itemId);
     }
 
+    public SniperSnapshot losing(int price) {
+        return new SniperSnapshot(itemId, price, lastBid, SniperState.LOSING);
+    }
+
 //    @Override
 //    public String toString() {
 //        return ToStringBuilder.reflectionToString(this);

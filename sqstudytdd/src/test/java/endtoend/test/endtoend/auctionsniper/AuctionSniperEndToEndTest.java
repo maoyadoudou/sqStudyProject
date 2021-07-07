@@ -98,6 +98,22 @@ public class AuctionSniperEndToEndTest {
         application.showsSniperHasWonAuction(auction2, 521);
     }
 
+    @Test
+    public void sniperLosesAnAuctionWhenThePriceIsTooHigh() throws XMPPException, InterruptedException {
+        auction1.startSellingItem();
+        application.startBiddingWithStopPrice(auction1, 1100);
+        auction1.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+        auction1.reportPrice(1000, 98, "other bidder");
+        application.hasShownSniperIsBidding(auction1, 1000,1098);
+        auction1.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID);
+        auction1.reportPrice(1197, 10, "third party");
+        application.hasShownSniperIsLosing(auction1, 1197, 1098);
+        auction1.reportPrice(1207, 10, "fourth party");
+        application.hasShownSniperIsLosing(auction1, 1207, 1098);
+        auction1.announceClosed();
+        application.showsSniperHasLostAuction();
+    }
+
     // Additional cleanup
     @After
     public void stopAuction() {

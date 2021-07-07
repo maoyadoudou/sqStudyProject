@@ -91,7 +91,7 @@ public class Main{
         Auction auction = new XMPPAuction(chat);
         this.notToBeGCd.add(auction);
         auctionEventListener.addListener(
-                new AuctionSniper(itemId, auction)
+                new AuctionSniper(new UserRequestListener.Item(itemId, Integer.MAX_VALUE), auction)
         );
         auction.join();
     }

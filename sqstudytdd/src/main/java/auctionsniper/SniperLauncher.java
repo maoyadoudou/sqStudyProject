@@ -1,9 +1,5 @@
 package auctionsniper;
 
-import auctionsniper.ui.SnipersTableModel;
-
-import java.util.ArrayList;
-
 public class SniperLauncher implements UserRequestListener {
     private final AuctionHouse auctionHouse;
     private final SniperCollector collector;
@@ -14,12 +10,12 @@ public class SniperLauncher implements UserRequestListener {
     }
 
     @Override
-    public void joinAuction(String itemId) {
+    public void joinAuction(Item item) {
 //        snipers.addSniper(SniperSnapshot.joining(itemId));
-        Auction auction = auctionHouse.auctionFor(itemId);
+        Auction auction = auctionHouse.auctionFor(item);
 //        notToBeGCd.add(auction);
 //        AuctionSniper sniper = new AuctionSniper(auction, new SwingThreadSniperListener(snipers), itemId);
-        AuctionSniper sniper = new AuctionSniper(itemId, auction);
+        AuctionSniper sniper = new AuctionSniper(item, auction);
         auction.addAuctionEventListener(sniper);
         collector.addSniper(sniper);
         auction.join();
