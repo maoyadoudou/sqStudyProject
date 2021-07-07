@@ -1,20 +1,17 @@
 package auctionsniper.ui;
 
-import auctionsniper.SniperListener;
-import auctionsniper.SniperSnapshot;
-import auctionsniper.SniperState;
+import auctionsniper.*;
 
 import javax.swing.table.AbstractTableModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static auctionsniper.SniperState.JOINING;
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
+public class SnipersTableModel extends AbstractTableModel implements PortfolioListener, SniperListener {
     private static String[] STATUS_TEXT = {"Joining", "Bidding", "Winning", "Lost", "Won"};
-//    private final static SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0, JOINING);
-//    private SniperSnapshot sniperSnapshot = STARTING_UP;
     private ArrayList<SniperSnapshot> snapshots = new ArrayList<>();
+    private final List<AuctionSniper> notToBeGCd = new ArrayList<>();
 
     public int getColumnCount() {
         return Column.values().length;
@@ -52,5 +49,17 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
                 return;
             }
         }
+    }
+
+    private void addSniperSnapshot(SniperSnapshot snapshot) {
+        snapshots.add(snapshot);
+        int row = snapshots.size() - 1;
+        fireTableRowsInserted(row, row);
+    }
+
+    @Override
+    public void sniperAdded(AuctionSniper sniper) {
+        addSniperSnapshot(sniper.getSnapshot());
+        sniper.addSniperListener(new SwingThreadSniperListener(this));
     }
 }

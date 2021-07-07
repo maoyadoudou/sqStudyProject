@@ -2,8 +2,10 @@ package auctionsniper;
 
 import auctionsniper.ui.MainWindow;
 import auctionsniper.ui.SnipersTableModel;
+import auctionsniper.util.Announcer;
 import auctionsniper.xmpp.AuctionMessageTranslator;
 import auctionsniper.xmpp.XMPPAuction;
+import auctionsniper.xmpp.XMPPAuctionHouse;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -30,34 +32,26 @@ public class Main{
 
     private final SnipersTableModel snipers = new SnipersTableModel();
     private MainWindow ui;
+    private final SniperPortfolio portfolio = new SniperPortfolio();
+    private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
+    @SuppressWarnings("unused")
+    private List<Auction> notToBeGCd = new ArrayList<>();
+
 
 
     public static void main(String... args) throws Exception {
         Main main = new Main();
-        XMPPConnection connection = connection(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]);
-        main.disconnectWhenUICloses(connection);
-        main.addUserRequestListenerFor(connection);
+        XMPPAuctionHouse auctionHouse = XMPPAuctionHouse.connect(args[ARG_HOSTNAME], args[ARG_USERNAME], args[ARG_PASSWORD]);
+        main.disconnectWhenUICloses(auctionHouse);
+        main.addUserRequestListenerFor(auctionHouse);
 //        for (int i = 3; i < args.length; i++) {
 //            main.joinAuction(connection, args[i]);
 //        }
     }
 
-    private void addUserRequestListenerFor(final XMPPConnection connection) {
-        ui.addUserRequestListener(new UserRequestListener() {
-            @Override
-            public void joinAuction(String itemId) {
-                snipers.addSniper(SniperSnapshot.joining(itemId));
-                Chat chat = connection.getChatManager().createChat(auctionId(itemId,connection), null);
-                notToBeGCd.add(chat);
-                Auction auction = new XMPPAuction(chat);
-                chat.addMessageListener(
-                        new AuctionMessageTranslator(connection.getUser(), new AuctionSniper(auction, new SwingThreadSniperListener(snipers), itemId))
-                );
-                auction.join();
-            }
-        });
+    private void addUserRequestListenerFor(final XMPPAuctionHouse auctionHouse) {
+        ui.addUserRequestListener(new SniperLauncher(auctionHouse, portfolio));
     }
-
     private static XMPPConnection connection(String hostname, String username, String password)
             throws XMPPException {
         XMPPConnection connection = new XMPPConnection(hostname);
@@ -65,13 +59,11 @@ public class Main{
         connection.login(username, password, AUCTION_RESOURCE);
         return connection;
     }
+
     private static String auctionId(String itemId, XMPPConnection connection) {
         return String.format(AUCTION_ID_FORMAT, itemId,
                 connection.getServiceName());
     }
-
-    @SuppressWarnings("unused")
-    private List<Chat> notToBeGCd = new ArrayList<>();
 
     public Main() throws Exception {
         startUserInterface();
@@ -80,7 +72,7 @@ public class Main{
     private void startUserInterface() throws Exception {
         SwingUtilities.invokeAndWait(new Runnable() {
             public void run() {
-                ui = new MainWindow(snipers);
+                ui = new MainWindow(portfolio);
             }
         });
     }
@@ -90,16 +82,17 @@ public class Main{
         safelyAddItemToModel(itemId);
         final Chat chat =
                 connection.getChatManager().createChat(auctionId(itemId, connection), null);
-        this.notToBeGCd.add(chat);
-        Auction auction = new XMPPAuction(chat);
+        Announcer<AuctionEventListener> auctionEventListener = Announcer.to(AuctionEventListener.class);
         chat.addMessageListener(
                 new AuctionMessageTranslator(
                         connection.getUser(),
-                        new AuctionSniper(
-                                auction,
-                                new SwingThreadSniperListener(snipers),
-                                itemId)));
+                        auctionEventListener.announce()));
 
+        Auction auction = new XMPPAuction(chat);
+        this.notToBeGCd.add(auction);
+        auctionEventListener.addListener(
+                new AuctionSniper(itemId, auction)
+        );
         auction.join();
     }
 
@@ -112,11 +105,11 @@ public class Main{
         });
     }
 
-    private void disconnectWhenUICloses(final XMPPConnection connection) {
+    private void disconnectWhenUICloses(final XMPPAuctionHouse connectionHouse) {
         ui.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                connection.disconnect();
+                connectionHouse.disconnect();
             }
         });
     }
