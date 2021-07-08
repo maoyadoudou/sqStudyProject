@@ -8,6 +8,7 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.States;
 import org.jmock.integration.junit4.JMock;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,13 +18,19 @@ import static org.hamcrest.Matchers.equalTo;
 @RunWith(JMock.class)
 public class AuctionSniperTest {
     private static final String ITEM_ID = "item-id";
+    private static final Item ITEM = new Item(ITEM_ID, 1234);
 
     private final Mockery context = new Mockery();
     private final SniperListener sniperListener =
             context.mock(SniperListener.class);
     private final Auction auction = context.mock(Auction.class);
-    private final AuctionSniper sniper = new AuctionSniper(new UserRequestListener.Item(ITEM_ID, Integer.MAX_VALUE), auction);
+    private final AuctionSniper sniper = new AuctionSniper(ITEM, auction);
     private final States sniperState = context.states("sniper");
+
+    @Before
+    public void attachListener() {
+        sniper.addSniperListener(sniperListener);
+    }
 
     @Test
     public void reportsLostIfAuctionClosesImmediately() {
@@ -94,5 +101,40 @@ public class AuctionSniperTest {
                 return actual.state;
             }
         };
+    }
+
+    @Test
+    public void reportsFailedIfAuctionFailsWhenBidding() {
+        ignoringAuction();
+        allowingSniperBidding();
+
+        expectSniperToFailWhenItIs("bidding");
+
+        sniper.currentPrice(123, 45, PriceSource.FromOtherBidder);
+        sniper.auctionFailed();
+    }
+
+    private void ignoringAuction() {
+        context.checking(new Expectations() {{
+            ignoring(auction);
+        }});
+    }
+
+    private void allowingSniperBidding() {
+        allowSniperStateChange(BIDDING, "bidding");
+    }
+
+    private void allowSniperStateChange(final SniperState newState, final String oldState) {
+        context.checking(new Expectations() {{
+            allowing(sniperListener).sniperStateChanged(with(aSniperThatIs(newState))); then(sniperState.is(oldState));
+        }});
+    }
+
+    private void expectSniperToFailWhenItIs(final String state) {
+        context.checking(new Expectations() {{
+            atLeast(1).of(sniperListener).sniperStateChanged(
+                    new SniperSnapshot(ITEM_ID, 0, 0, FAILED));
+            when(sniperState.is(state));
+        }});
     }
 }

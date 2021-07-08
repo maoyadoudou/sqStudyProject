@@ -1,5 +1,6 @@
 package unit.test.auctionsniper.ui;
 
+import auctionsniper.Item;
 import auctionsniper.SniperPortfolio;
 import auctionsniper.UserRequestListener;
 import auctionsniper.ui.MainWindow;
@@ -15,7 +16,7 @@ public class MainWindowTest {
 
     @Test
     public void makeUserRequestWhenJoinButtonClicked() {
-        final ValueMatcherProbe<UserRequestListener.Item> itemProbe = new ValueMatcherProbe<>(equalTo(new UserRequestListener.Item("an item-id", 789)), "item request");
+        final ValueMatcherProbe<Item> itemProbe = new ValueMatcherProbe<>(equalTo(new Item("an item-id", 789)), "item request");
         mainWindow.addUserRequestListener(
                 new UserRequestListener() {
                     @Override

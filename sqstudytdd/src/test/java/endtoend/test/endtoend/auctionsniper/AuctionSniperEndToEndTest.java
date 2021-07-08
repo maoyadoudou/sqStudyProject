@@ -4,6 +4,8 @@ import org.jivesoftware.smack.XMPPException;
 import org.junit.After;
 import org.junit.Test;
 
+import java.io.IOException;
+
 /**
  * End to end Test
  */
@@ -113,6 +115,35 @@ public class AuctionSniperEndToEndTest {
         auction1.announceClosed();
         application.showsSniperHasLostAuction();
     }
+
+    @Test
+    public void sniperReportsInvalidAuctionMessageAndStopsRespondingToEvents() throws XMPPException, InterruptedException, IOException {
+        String brokenMessage = "a broken message";
+        auction1.startSellingItem();
+        auction2.startSellingItem();
+
+        application.startBiddingIn(auction1, auction2);
+        auction1.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+
+        auction1.reportPrice(500, 20, "other bidder");
+        auction1.hasReceivedBid(520, ApplicationRunner.SNIPER_XMPP_ID);
+
+        auction1.sendInvalidMessageContaining(brokenMessage);
+        application.hasShownSniperHasFailed(auction1);
+
+        auction1.reportPrice(520, 21, "other bidder");
+        waitForAnotherAuctionEvent();
+
+        application.reportsInvalidMessage(auction1, brokenMessage);
+        application.hasShownSniperHasFailed(auction1);
+    }
+
+    private void waitForAnotherAuctionEvent() throws InterruptedException, XMPPException {
+        auction2.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID);
+        auction2.reportPrice(600, 6, "other bidder");
+        application.hasShownSniperIsBidding(auction2, 600, 606);
+    }
+
 
     // Additional cleanup
     @After

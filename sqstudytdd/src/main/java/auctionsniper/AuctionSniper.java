@@ -3,21 +3,23 @@ package auctionsniper;
 import auctionsniper.util.Announcer;
 
 public class AuctionSniper implements AuctionEventListener {
-    private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
     private final Auction auction;
+    private final Announcer<SniperListener> listeners = Announcer.to(SniperListener.class);
+    private final Item item;
     private SniperSnapshot snapshot;
-    private final UserRequestListener.Item item;
 
-//    public AuctionSniper(Auction auction, SniperListener sniperListener, String itemId) {
-//        this.auction = auction;
-//        this.sniperListener = sniperListener;
-//        this.snapshot = SniperSnapshot.joining(itemId);
-//    }
-
-    public AuctionSniper(UserRequestListener.Item item, Auction auction) {
+    public AuctionSniper(Item item, Auction auction) {
         this.item = item;
         this.auction = auction;
         this.snapshot = SniperSnapshot.joining(item.identifier);
+    }
+
+    public SniperSnapshot getSnapshot() {
+        return snapshot;
+    }
+
+    public void addSniperListener(SniperListener listener) {
+        listeners.addListener(listener);
     }
 
     public void auctionClosed() {
@@ -33,7 +35,7 @@ public class AuctionSniper implements AuctionEventListener {
                 break;
             case FromOtherBidder:
                 int bid = price + increment;
-                if (item.allowsBid(bid)) {
+                if (item.allows(bid)) {
                     auction.bid(bid);
                     snapshot = snapshot.bidding(price, bid);
                 } else {
@@ -44,15 +46,13 @@ public class AuctionSniper implements AuctionEventListener {
         notifyChange();
     }
 
+    @Override
+    public void auctionFailed() {
+        snapshot = snapshot.failed();
+        notifyChange();
+    }
+
     private void notifyChange() {
         listeners.announce().sniperStateChanged(snapshot);
-    }
-
-    public SniperSnapshot getSnapshot() {
-        return snapshot;
-    }
-
-    public void addSniperListener(SwingThreadSniperListener swingThreadSniperListener) {
-        listeners.addListener(swingThreadSniperListener);
     }
 }
