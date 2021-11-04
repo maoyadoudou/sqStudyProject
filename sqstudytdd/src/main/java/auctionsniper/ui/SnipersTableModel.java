@@ -1,20 +1,41 @@
 package auctionsniper.ui;
 
+import auctionsniper.AuctionSniper;
 import auctionsniper.SniperListener;
 import auctionsniper.SniperSnapshot;
 import auctionsniper.SniperState;
+import auctionsniper.util.Defect;
+import auctionsniper.SniperPortfolio.PortfolioListener;
 
 import javax.swing.table.AbstractTableModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static auctionsniper.SniperState.JOINING;
 
-public class SnipersTableModel extends AbstractTableModel implements SniperListener {
-    private static String[] STATUS_TEXT = {"Joining", "Bidding", "Winning", "Lost", "Won"};
-//    private final static SniperSnapshot STARTING_UP = new SniperSnapshot("", 0, 0, JOINING);
-//    private SniperSnapshot sniperSnapshot = STARTING_UP;
-    private ArrayList<SniperSnapshot> snapshots = new ArrayList<>();
+public class SnipersTableModel extends AbstractTableModel implements
+        SniperListener, PortfolioListener {
+    private static String[] STATUS_TEXT = {"Joining", "Bidding", "Winning", "Losing", "Lost", "Won", "Failed"};
+    private List<SniperSnapshot> snapshots = new ArrayList<SniperSnapshot>();
+
+    @Override
+    public void sniperAdded(AuctionSniper sniper) {
+        sniper.addSniperListener(new SwingThreadSniperListener(this));
+        addSniperSnapshot(sniper.getSnapshot());
+    }
+
+    private void addSniperSnapshot(SniperSnapshot snapshot) {
+        int row = snapshots.size();
+        snapshots.add(snapshot);
+        fireTableRowsInserted(row, row);
+    }
+
+    @Override
+    public void sniperStateChanged(SniperSnapshot newSniperSnapshot) {
+        int row = rowMatching(newSniperSnapshot);
+        snapshots.set(row, newSniperSnapshot);
+        fireTableRowsUpdated(row, row);
+    }
 
     public int getColumnCount() {
         return Column.values().length;
@@ -37,20 +58,12 @@ public class SnipersTableModel extends AbstractTableModel implements SniperListe
         return STATUS_TEXT[state.ordinal()];
     }
 
-    public void addSniper(SniperSnapshot snapshot) {
-        int row = snapshots.size();
-        snapshots.add(snapshot);
-        fireTableRowsInserted(row, row);
-    }
-
-    @Override
-    public void sniperStateChanged(SniperSnapshot newSnapshot) {
+    private int rowMatching(SniperSnapshot newSnapshot) {
         for (int i = 0; i < snapshots.size(); i++) {
             if (newSnapshot.isForSameItemAs(snapshots.get(i))) {
-                snapshots.set(i, newSnapshot);
-                fireTableRowsUpdated(i, i);
-                return;
+                return i;
             }
         }
+        throw new Defect("Cannot find match for " + newSnapshot);
     }
 }

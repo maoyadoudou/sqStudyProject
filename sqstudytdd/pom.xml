@@ -36,6 +36,12 @@
             <version>2.6.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-legacy</artifactId>
+            <version>2.6.0</version>
+            <scope>test</scope>
+        </dependency>
         <!--Smack-->
         <dependency>
             <groupId>org.igniterealtime.smack</groupId>
@@ -78,6 +84,16 @@
             <groupId>com.googlecode.windowlicker</groupId>
             <artifactId>windowlicker-core</artifactId>
             <version>r268</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
         </dependency>
 
     </dependencies>

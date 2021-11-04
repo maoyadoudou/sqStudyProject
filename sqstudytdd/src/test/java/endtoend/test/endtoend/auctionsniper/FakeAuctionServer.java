@@ -8,6 +8,8 @@ import org.jivesoftware.smack.packet.Message;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static auctionsniper.xmpp.XMPPAuction.BID_COMMAND_FORMAT;
+import static auctionsniper.xmpp.XMPPAuction.JOIN_COMMAND_FORMAT;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -55,13 +57,13 @@ public class FakeAuctionServer {
 
     public void hasReceivedJoinRequestFrom(String sniperId)
             throws InterruptedException {
-        receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT));
+        receivesAMessageMatching(sniperId, equalTo(JOIN_COMMAND_FORMAT));
     }
 
     public void hasReceivedBid(int bid, String sniperId)
             throws InterruptedException {
         receivesAMessageMatching(sniperId,
-                equalTo(format(Main.BID_COMMAND_FORMAT, bid)));
+                equalTo(format(BID_COMMAND_FORMAT, bid)));
     }
 
     private void receivesAMessageMatching(String sniperId,
@@ -77,6 +79,10 @@ public class FakeAuctionServer {
 
     public void stop() {
         connection.disconnect();
+    }
+
+    public void sendInvalidMessageContaining(String brokenMessage) throws XMPPException {
+        currentChat.sendMessage(brokenMessage);
     }
 
     public class SingleMessageListener implements MessageListener {
