@@ -1,5 +1,7 @@
 package com.mydd.model;
 
+import java.util.Objects;
+
 public class ListNode {
     public int val;
     public ListNode next;
@@ -9,6 +11,12 @@ public class ListNode {
         this.val = val;
         this.next = next;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(val, next);
+    }
+
     @Override
     public boolean equals(Object a) {
         if (a == null) return false;

@@ -27,8 +27,8 @@ public class AuctionMessageTranslator implements MessageListener {
         try {
             translate(messageBody);
         } catch (Exception exception) {
-            failureReporter.cannotTranslateMessage(sniperId, messageBody, exception);
             listener.auctionFailed();
+            failureReporter.cannotTranslateMessage(sniperId, messageBody, exception);
         }
     }
 

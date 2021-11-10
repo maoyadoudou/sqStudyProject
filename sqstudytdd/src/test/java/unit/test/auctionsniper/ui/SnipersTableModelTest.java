@@ -127,8 +127,8 @@ public class SnipersTableModelTest {
 //            ignoring(listener);
 //        }});
 //
-//        model.addSniper(SniperSnapshot.joining("item 0"));
-//        model.addSniper(SniperSnapshot.joining("item 1"));
+//        com.mydd.model.addSniper(SniperSnapshot.joining("item 0"));
+//        com.mydd.model.addSniper(SniperSnapshot.joining("item 1"));
 //
 //        assertEquals("item 0", cellValue(0, Column.ITEM_IDENTIFIER));
 //        assertEquals("item 1", cellValue(1, Column.ITEM_IDENTIFIER));
